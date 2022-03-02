@@ -16,5 +16,11 @@ With letterboxd randomiser, randomising letterboxd lists can be done easily. Dec
 2. User and List names must match list URL
 
 Made with <a href="https://github.com/pallets/flask">Flask</a>
+To run locally:
+1. Python and its package installer (pip) must be on your machine
+2. $pip install Flask
+3. $pip install Flask-WTF
+4. $cp flaskapp.py app.py
+5. $flask run
 
 <p>Credit to spacebruce for letterboxd access framework</p>
