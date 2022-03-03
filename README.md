@@ -20,7 +20,8 @@ To run locally:
 1. Python and its package installer (pip) must be on your machine
 2. $pip install Flask
 3. $pip install Flask-WTF
-4. $cp flaskapp.py app.py
-5. $flask run
+4. $pip install beautifulsoup4
+5. $cp flaskapp.py app.py
+6. $flask run
 
 <p>Credit to spacebruce for letterboxd access framework</p>
