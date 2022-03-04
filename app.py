@@ -53,11 +53,11 @@ def handle_data():
         #firstPage.Load()
         p1 = requests.get('https://letterboxd.com/' + userName + '/list/' + listName + '/page/1/')
         soup1 = BeautifulSoup(p1.text,'html.parser')
-        soup2 = soup1.find('li', class_='poster-container')
-        print(soup2.prettify())
+        soup2 = soup1.find_all('img', class_='image')
+        names = []
+        for index in soup2:
+            print(index.prettify())
         return render_template('home.html')
-
-
 
 
 
