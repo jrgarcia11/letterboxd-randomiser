@@ -41,7 +41,7 @@ def get_posters(page):
             name.encode('utf8')
             year = page.year;
             filmList.append(Film(name, year))
-            print('filmList: '+name)
+            # print('filmList: '+name)
     return filmList
 
 
@@ -49,6 +49,7 @@ def get_posters(page):
 def handle_data():
     if request.method == 'POST':
         OGurl = request.form.get('url')
+        print(OGurl)
         pageList = []
         filmList = []
 
@@ -92,7 +93,7 @@ def handle_data():
             # find films on pages
             for i in range(0, len(pageList)):
                 page = pageList[i]
-                print('PAGE '+str(i))
+                # print('PAGE '+str(i))
                 filmList = filmList + get_posters(page)
             
         randomNumber = random.randint(0,len(filmList)-1) # make random number
