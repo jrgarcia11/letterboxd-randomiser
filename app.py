@@ -14,23 +14,48 @@ from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 
+class Film:
+    def __init__(self, name, year):
+        self.name = name
+        self.year = year
+
+
 @app.route("/")
 @app.route("/home")
 def home():
     return render_template('home.html')
 
 
+def get_posters(page):
+    filmList = []
+    if page.ready == False:
+        page.Load();
+    # read posters
+    posterContainer = page.soup.find(class_='poster-list')
+    if posterContainer:
+    #<img alt="John Wick: Chapter 2" class="image" height="105" src="https://s1.ltrbxd.com/static/img/empty-poster-70.84a.png" width="70"/>
+        nameList = posterContainer.find_all('img')
+        for film in range(0, len(nameList)):
+            nameEntry = nameList[film]
+            name = nameEntry.get('alt')
+            name.encode('utf8')
+            year = page.year;
+            filmList.append(Film(name, year))
+            print('filmList: '+name)
+    return filmList
+
+
 @app.route("/handle_data", methods =['GET', 'POST'])
 def handle_data():
     if request.method == 'POST':
-        OGuserName = 'zoo3y' #request.form.get('username')
-        OGlistName = 'horror-watchlist' #request.form.get('listname')
-        userName = OGuserName.replace(" ", "_")
-        listName = OGlistName.lower().replace(" ", "-").replace(",", "").replace(":", "").replace("'", "").replace("?", "").replace(".", "")
+        OGurl = request.form.get('url')
+        pageList = []
+        filmList = []
 
         class Page():
-            def __init__(self, url):
+            def __init__(self, url, num):
                 self.url = url
+                self.num = num
                 self.page = None
                 self.soup = None
                 self.year = 0
@@ -47,71 +72,36 @@ def handle_data():
                 self.year = year
 
         # Find needed pages
-        pageList = []
+        firstPage = Page(OGurl, 1)
+        firstPage.Load()
+        pageList.append(firstPage)
+        pageDiscoveryList = firstPage.soup.find_all('li', class_='paginate-page')
 
-        firstPage = Page('https://letterboxd.com/' + userName + '/list/' + listName + '/page/1/')
-        #firstPage.Load()
-        p1 = requests.get('https://letterboxd.com/' + userName + '/list/' + listName + '/page/1/')
-        soup1 = BeautifulSoup(p1.text,'html.parser')
-        soup2 = soup1.find_all('img', class_='image')
-        names = []
-        for index in soup2:
-            print(index.prettify())
-        return render_template('home.html')
-
-
-
-
-
-        """
-        #pageDiscovery = firstPage.soup.find(class_='paginate-pages')	# Find links in pagination section
-        #pageDiscoveryList = pageDiscovery.find_all('a')
-
-        # find last page number
-        pageCount = 0
-        for pageID in pageDiscoveryList:		
-            pageNumber = pageID.contents[0]
-            pageCount = max(pageCount, int(pageNumber))
+        # If only 1 page exists
+        if len(pageDiscoveryList) == 0:
+            filmList = get_posters(pageList[0])
+        else:
+            # find last page number
+            pageCount = int(pageDiscoveryList[len(pageDiscoveryList)-1].a.get_text())
 
             # add range to search list
-        for pageNum in range(2, pageCount + 1):
-            pageTemp = Page('https://letterboxd.com/' + userName + '/list/' + listName + '/page/' + str(pageNum) + '/')
-            pageList.append(pageTemp)
+            for pageNum in range(2, pageCount + 1):
+                pageTemp = Page(OGurl+ '/page/' + str(pageNum) + '/', str(pageNum))
+                pageList.append(pageTemp)
 
-        # find films on pages
-        filmList = []
-
-        for i in range(0, len(pageList)):
-            page = pageList[i]
-            if page.ready == False:
-                page.Load()
-
-        # read posters
-            posterContainer = page.soup.find(class_='poster-list')
-            if posterContainer:
-                ratingList = posterContainer.find_all('li')		# <li class="poster-container" data-owner-rating="0">
-                nameList = posterContainer.find_all('img')		# <img alt="John Wick: Chapter 2" class="image" height="105" src="https://s1.ltrbxd.com/static/img/empty-poster-70.8461d4ea.png" width="70"/>
-
-                for film in range(0, len(nameList)):
-                    nameEntry = nameList[film]
-                    name = nameEntry.get('alt')
-                    name.encode('utf8')
-
-                    ratingEntry = ratingList[film]
-                    ratingData = ratingEntry.get('data-owner-rating')
-                    rating = int(ratingData)
-
-                    year = page.year;
-
-                    filmList.append(Film(name, rating, year))
-        randomNumber = random.randint(0,len(nameList)-1) # make random number
-        filmRandom = nameList[randomNumber]			     # variable 'films' is a random movie poster
-        filmsRandomString = str(filmRandom)
-        finishedRandomString = filmsRandomString[10:-110]
-        movieLinkString = filmsRandomString[10:-110].replace(" ", "-")
+            # find films on pages
+            for i in range(0, len(pageList)):
+                page = pageList[i]
+                print('PAGE '+str(i))
+                filmList = filmList + get_posters(page)
+            
+        randomNumber = random.randint(0,len(filmList)-1) # make random number
+        filmRandom = filmList[randomNumber]			     # variable 'films' is a random movie poster
+        filmsRandomString = str(filmRandom.name)
+        print('RANDOM CHOICE: '+filmsRandomString)
+        movieLinkString = filmsRandomString.replace(" ", "-")
         movieLink = 'https://letterboxd.com/film/' + movieLinkString.lower().replace(",", "").replace(":", "").replace("'", "").replace("?", "").replace("!", "").replace("&", "") + '/'
-        return render_template('home.html', movieLink= movieLink, films = finishedRandomString)
-        """
+        return render_template('home.html', movieLink= movieLink, films = filmsRandomString)
 
 if __name__ == '__main__':
     app.run(debug=True)
