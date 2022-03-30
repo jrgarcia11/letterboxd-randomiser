@@ -48,8 +48,19 @@ def get_posters(page):
 @app.route("/handle_data", methods =['GET', 'POST'])
 def handle_data():
     if request.method == 'POST':
-        OGurl = request.form.get('url')
-        print(OGurl)
+        #OGurl = request.form.get("url")
+        #print(OGurl)
+        
+        urls = []
+        for key, val in request.form.items():
+            if key.startswith("url"):
+                if val:
+                    urls.append(val)
+
+        randomList = random.randint(0,len(urls)-1) # make random number
+        OGurl = urls[randomList] #choose random list
+        print("OGurl: "+OGurl)
+
         pageList = []
         filmList = []
 
@@ -90,11 +101,15 @@ def handle_data():
                 pageTemp = Page(OGurl+ '/page/' + str(pageNum) + '/', str(pageNum))
                 pageList.append(pageTemp)
 
+            # choose a random page
+            randomPage = random.randint(0,len(pageList)-1) # make random number
+            filmList = get_posters(pageList[randomPage])
+
             # find films on pages
-            for i in range(0, len(pageList)):
-                page = pageList[i]
+            #for i in range(0, len(pageList)):
+                #page = pageList[i]
                 # print('PAGE '+str(i))
-                filmList = filmList + get_posters(page)
+                #filmList = filmList + get_posters(page)
             
         randomNumber = random.randint(0,len(filmList)-1) # make random number
         filmRandom = filmList[randomNumber]			     # variable 'films' is a random movie poster
