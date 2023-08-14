@@ -3,34 +3,43 @@
 <head>
 	<!--JQUERY-->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	
+	<link rel="shortcut icon" sizes="196x196" href="https://s.ltrbxd.com/static/img/icons/touch-icon-192x192.257b84e7.png">
 	<title>Random Movie Roulette</title>
 </head>
 
-<!-- Header -->
 <body style="background-color: #202830; text-align:center">
+	<!-- Header -->
 	<img src="https://a.ltrbxd.com/logos/letterboxd-logo-h-neg-rgb-1000px.png" width="450" height="90" alt="FLetterboxd">
-	<b><center><font color="white" face = "Verdana" size = "6">Random Movie Roulette</font></center></b>
+	<font style="position:relative;top:-30px;"color="white" face = "Verdana" size = "6">Random Movie Roulette</font>
+	
 
-<!-- Film chosen for you -->
-<custom-block>{% block content %}{% endblock %}</custom-block>
+	<!-- Film chosen for you -->
+	<custom-block>{% block content %}{% endblock %}</custom-block>
 
+	<div class="container">
+		<!--Links-->
+		<div class="links">
+			<ul>
+				<li><a href="https://letterboxd.com/tobiasandersen2/list/random-movie-roulette/">Random Movies</a></li>
+				<li><a href="https://letterboxd.com/zoo3y/list/horror-watchlist/">Horror Watchlist</a></li>
+			</ul>
+		</div>
 
+		<!-- Form -->
+		<div class="forms">
+			<form action="{{ url_for('handle_data') }}" method="POST">
+			<form>
+			<div id=row1 class="form-row">
+					<input type="text" size=100 name=url1 class="form-control" placeholder="List URL">
+					<a id=add_list href=# class="button">➕</a>
+			</div>
+			<p><button type="submit" class="btn btn-primary"><b>Random!</b></button></p>
+			</form>
+		</div>
 
+	</div><!--container-->
+</body>
 
-<!-- Forms -->
-<form action="{{ url_for('handle_data') }}" method="POST">
-<form>
-  <div id=row1 class="form-row">
-	    <input type="text" size=100 name=url1 class="form-control" placeholder="List URL">
-	    <a id=add_list href=# class="button">➕</a>
-  </div>
-  <p><button type="submit" class="btn btn-primary"><b>Random!</b></button></p>
-</form>
-
-
-
-<!--javascript-->
 <script type=text/javascript>
 	$(function() {
 		var x = 2;
@@ -42,17 +51,30 @@
 	});
 </script>
 
-
-
-
 <!-- Form CSS -->
  <style type='text/css'>
-
-  div {
- margin-left: 50px;
- margin-right: 50px;
+.container{
+	display:flex;
+	justify-content: space-evenly;
+	flex-wrap: wrap;
+	padding-left:100px;
+	padding-right: 100px;
 }
-
+.links {
+	flex: 1;
+}
+a:visited {
+	color:#10b135;
+}
+ul{
+	list-style-type: none;
+	color: #ff8000;
+	font-size: 40px;
+}
+.forms{
+	flex: 2;
+	padding-top: 50px;
+}
 .btn {
 	height:30px;
     width:120px;
@@ -92,15 +114,12 @@
 	letter-spacing: .075em;
 	
 }
-
 input[type=text] {
   width: 550px;
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
 }
-
 </style>
 
-</body>
 </html>
